@@ -1,0 +1,51 @@
+
+
+get / IndexController@home 'home'
+
+with prefix /book controller ContactController
+	get / index 'book-list'
+	get /new create 'book-item-new'
+	get /new/add store 'book-item-create'
+	get /{item} show 'book-item'
+without
+
+with prefix /notas controller IndexController name 'nota'
+	get /{nota}/em/{formato} chegou2 'nota-formato'
+	get /{nota} chegou 'nota'
+
+	with prefix /russos controller RussoController name 'russo'
+		get / listar 'list'
+		get /{item} mostrar 'show'
+		get add adicionar 'add'
+		post /add/me doAdicionar 'add-post'
+	without
+
+	get /conta-resma contaResmasDe 'conta-resmas'
+without
+
+// gerenciar utilizadores
+with prefix /utilizador name 'user'
+	get /novo IndexController@novoUsuario 'novo' # criar novo
+	get /novo/gravar IndexController@novoUsuarioGravar 'novo-gravar' # efetivar criação
+without
+
+get /debug/{anything} DebugController@debug 'debug-a-thing'
+
+/*--------------------------------------*\
+preta					161,66	falta 1
+cafeteira				111,95	falta 1
+colchão					82,49	falta 8
+cea						157,49	falta 1
+consertoTelaCelular		150		falta 1
+vitaminasPop			156,36	falta 1
+celPainho				83,60	falta 3
+------------------------------------------
+total					903,55	jun
+total					166,09	jul, ago
+total					82,49	set, ..
+\*--------------------------------------*/
+
+get /paulista PaulistaController@verTransito 'see-transit'
+
+
+

@@ -1,0 +1,30 @@
+{
+	"name": "collei/routex",
+	"description": "Routex is a simple routing declarative language for Jeht and other frameworks.",
+	"keywords": [
+		"routex",
+		"php",
+		"route",
+		"parser"
+	],
+	"type": "library",
+	"license": "MIT",
+	"require": {
+		"php": ">=7.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Routex\\": "src/Routex"
+		}
+	},
+	"funding": [
+		{
+			"type": "bitcoin",
+			"url": "https://www.blockchain.com/btc/1CtoobRfoL4pHJ5i24dVCtGWcYcRtBLMaz"
+		},
+		{
+			"type": "monero",
+			"url": "https://www.blockchain.com/xmr/43DvqaNskRfeyNnCfvapxrXg9Bb4EADCj9aFW3FQdthi3ukhxZRtLvQiqMNeYvNvxN8F7WaULkKJJ63RxHgohrPtDuykFmL"
+		}
+	]
+}
