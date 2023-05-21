@@ -38,10 +38,11 @@ $lines = SyntaxAnalyzer::linearize($tokens);
 		<table width="100%">
 <?php
 //
-foreach ($lines as $line) {
+foreach ($lines as $n => $line) {
 	//
 	?>
 			<tr>
+				<th width="2%"><?=($n + 1)?></td>
 	<?php
 	//
 	foreach ($line as $token) {
@@ -61,7 +62,6 @@ foreach ($lines as $line) {
 }
 //
 ?>
-			</tr>
 		</table>
 	</fieldset>
 </fieldset>
