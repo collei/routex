@@ -19,8 +19,8 @@ class Tokenizer
 	public const ROUTEX_KEY_CONTROLLER = 15;
 	public const ROUTEX_KEY_MIDDLEWARE = 16;
 	public const ROUTEX_VERB = 31;
-	public const ROUTEX_NAME = 32;
-	public const ROUTEX_HANDLER = 33;
+	public const ROUTEX_HANDLER = 32;
+	public const ROUTEX_NAME = 33;
 	public const ROUTEX_URI = 34;
 
 	public const ROUTEX_TOKEN_SPEC = [
@@ -33,9 +33,9 @@ class Tokenizer
 		self::ROUTEX_KEY_CONTROLLER => '/^controller$/',
 		self::ROUTEX_KEY_MIDDLEWARE => '/^middleware$/',
 		self::ROUTEX_VERB => '/^(?P<verb>(?>get|post|patch|put|head|options|delete)|any:\w+(?>\,\w+)*|any)$/',
-		self::ROUTEX_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
 		self::ROUTEX_HANDLER => '/^(?>(?P<handler>\w+)(?>\@(?P<method>\w+))?)$/',
-		self::ROUTEX_URI => '/^(\/?([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/'
+		self::ROUTEX_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
+		self::ROUTEX_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/'
 	];
 
 	public const ROUTEX_TOKEN_NAMES = [
@@ -49,8 +49,8 @@ class Tokenizer
 		self::ROUTEX_KEY_MIDDLEWARE => 'ROUTEX_KEY_MIDDLEWARE',
 		self::ROUTEX_VERB => 'ROUTEX_VERB',
 		self::ROUTEX_HANDLER => 'ROUTEX_HANDLER',
-		self::ROUTEX_URI => 'ROUTEX_URI',
-		self::ROUTEX_NAME => 'ROUTEX_NAME'
+		self::ROUTEX_NAME => 'ROUTEX_NAME',
+		self::ROUTEX_URI => 'ROUTEX_URI'
 	];
 
 	public static function tokenize($text)
