@@ -4,59 +4,59 @@ namespace Routex\Parser;
 class SyntaxAnalyzer
 {
 	protected const ROUTEX_VALID_SEQUENCES = [
-		Tokenizer::ROUTEX_VERB => [
-			[ Tokenizer::ROUTEX_VERB, Tokenizer::ROUTEX_URI ],
-			[ Tokenizer::ROUTEX_URI, Tokenizer::ROUTEX_HANDLER ],
-			[ Tokenizer::ROUTEX_HANDLER, Tokenizer::ROUTEX_NAME ],
-			[ Tokenizer::ROUTEX_NAME, NULL ],
+		Token::RT_VERB => [
+			[ Token::RT_VERB, Token::RT_URI ],
+			[ Token::RT_URI, Token::RT_HANDLER ],
+			[ Token::RT_HANDLER, Token::RT_NAME ],
+			[ Token::RT_NAME, Token::RT_NEWLINE ],
 		],
-		Tokenizer::ROUTEX_KEYWORD_WITH => [
-			[ Tokenizer::ROUTEX_KEYWORD_WITH, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_KEYWORD_WITH, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_KEYWORD_WITH, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_KEYWORD_WITH, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_KEY_PREFIX, Tokenizer::ROUTEX_URI ],
-			[ Tokenizer::ROUTEX_KEY_NAME, Tokenizer::ROUTEX_NAME ],
-			[ Tokenizer::ROUTEX_KEY_CONTROLLER, Tokenizer::ROUTEX_HANDLER ],
-			[ Tokenizer::ROUTEX_KEY_MIDDLEWARE, Tokenizer::ROUTEX_HANDLER ],
-			[ Tokenizer::ROUTEX_URI, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_URI, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_URI, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_URI, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_URI, NULL ],
-			[ Tokenizer::ROUTEX_NAME, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_NAME, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_NAME, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_NAME, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_NAME, NULL ],
-			[ Tokenizer::ROUTEX_HANDLER, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_HANDLER, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_HANDLER, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_HANDLER, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_HANDLER, NULL ],
+		Token::RT_KEYWORD_WITH => [
+			[ Token::RT_KEYWORD_WITH, Token::RT_KEY_PREFIX ],
+			[ Token::RT_KEYWORD_WITH, Token::RT_KEY_NAME ],
+			[ Token::RT_KEYWORD_WITH, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_KEYWORD_WITH, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_KEY_PREFIX, Token::RT_URI ],
+			[ Token::RT_KEY_NAME, Token::RT_NAME ],
+			[ Token::RT_KEY_CONTROLLER, Token::RT_HANDLER ],
+			[ Token::RT_KEY_MIDDLEWARE, Token::RT_HANDLER ],
+			[ Token::RT_URI, Token::RT_KEY_PREFIX ],
+			[ Token::RT_URI, Token::RT_KEY_NAME ],
+			[ Token::RT_URI, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_URI, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_URI, Token::RT_NEWLINE ],
+			[ Token::RT_NAME, Token::RT_KEY_PREFIX ],
+			[ Token::RT_NAME, Token::RT_KEY_NAME ],
+			[ Token::RT_NAME, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_NAME, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_NAME, Token::RT_NEWLINE ],
+			[ Token::RT_HANDLER, Token::RT_KEY_PREFIX ],
+			[ Token::RT_HANDLER, Token::RT_KEY_NAME ],
+			[ Token::RT_HANDLER, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_HANDLER, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_HANDLER, Token::RT_NEWLINE ],
 		],
-		Tokenizer::ROUTEX_KEYWORD_WITHOUT => [
-			[ Tokenizer::ROUTEX_KEYWORD_WITHOUT, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_KEYWORD_WITHOUT, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_KEYWORD_WITHOUT, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_KEYWORD_WITHOUT, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_KEYWORD_WITHOUT, NULL ],
-			[ Tokenizer::ROUTEX_KEY_PREFIX, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_KEY_PREFIX, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_KEY_PREFIX, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_KEY_PREFIX, NULL ],
-			[ Tokenizer::ROUTEX_KEY_NAME, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_KEY_NAME, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_KEY_NAME, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_KEY_NAME, NULL ],
-			[ Tokenizer::ROUTEX_KEY_CONTROLLER, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_KEY_CONTROLLER, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_KEY_CONTROLLER, Tokenizer::ROUTEX_KEY_MIDDLEWARE ],
-			[ Tokenizer::ROUTEX_KEY_CONTROLLER, NULL ],
-			[ Tokenizer::ROUTEX_KEY_MIDDLEWARE, Tokenizer::ROUTEX_KEY_NAME ],
-			[ Tokenizer::ROUTEX_KEY_MIDDLEWARE, Tokenizer::ROUTEX_KEY_CONTROLLER ],
-			[ Tokenizer::ROUTEX_KEY_MIDDLEWARE, Tokenizer::ROUTEX_KEY_PREFIX ],
-			[ Tokenizer::ROUTEX_KEY_MIDDLEWARE, NULL ],
+		Token::RT_KEYWORD_WITHOUT => [
+			[ Token::RT_KEYWORD_WITHOUT, Token::RT_KEY_PREFIX ],
+			[ Token::RT_KEYWORD_WITHOUT, Token::RT_KEY_NAME ],
+			[ Token::RT_KEYWORD_WITHOUT, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_KEYWORD_WITHOUT, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_KEYWORD_WITHOUT, Token::RT_NEWLINE ],
+			[ Token::RT_KEY_PREFIX, Token::RT_KEY_NAME ],
+			[ Token::RT_KEY_PREFIX, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_KEY_PREFIX, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_KEY_PREFIX, Token::RT_NEWLINE ],
+			[ Token::RT_KEY_NAME, Token::RT_KEY_PREFIX ],
+			[ Token::RT_KEY_NAME, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_KEY_NAME, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_KEY_NAME, Token::RT_NEWLINE ],
+			[ Token::RT_KEY_CONTROLLER, Token::RT_KEY_PREFIX ],
+			[ Token::RT_KEY_CONTROLLER, Token::RT_KEY_NAME ],
+			[ Token::RT_KEY_CONTROLLER, Token::RT_KEY_MIDDLEWARE ],
+			[ Token::RT_KEY_CONTROLLER, Token::RT_NEWLINE ],
+			[ Token::RT_KEY_MIDDLEWARE, Token::RT_KEY_NAME ],
+			[ Token::RT_KEY_MIDDLEWARE, Token::RT_KEY_CONTROLLER ],
+			[ Token::RT_KEY_MIDDLEWARE, Token::RT_KEY_PREFIX ],
+			[ Token::RT_KEY_MIDDLEWARE, Token::RT_NEWLINE ],
 		],
 	];
 
@@ -75,27 +75,27 @@ class SyntaxAnalyzer
 			//
 			// defines the context for the current line being started.
 			if (is_null($context) && (
-				Tokenizer::ROUTEX_VERB == $current['token_id'] ||
-				Tokenizer::ROUTEX_KEYWORD_WITH == $current['token_id'] ||
-				Tokenizer::ROUTEX_KEYWORD_WITHOUT == $current['token_id']
+				Token::RT_VERB == $current['token_id'] ||
+				Token::RT_KEYWORD_WITH == $current['token_id'] ||
+				Token::RT_KEYWORD_WITHOUT == $current['token_id']
 			)) {
 				$context = $current['token_id'];
 			}
 			//
 			if (is_null($last)) {
 				// insert an empty line for the counter, if any
-				if (Tokenizer::ROUTEX_NEWLINE == $current['token_id']) {
+				if (Token::RT_NEWLINE == $current['token_id']) {
 					$lines[] = $emptyLine;
 				}
 				//
 				continue;
 			}
 			//
-			if (Tokenizer::ROUTEX_NEWLINE == $current['token_id']) {
+			if (Token::RT_NEWLINE == $current['token_id']) {
 				$lines[] = $line ?: $emptyLine;
 				$line = [];
 				$context = null;
-			} elseif (Tokenizer::ROUTEX_COMMENTS == $current['token_id']) {
+			} elseif (Token::RT_COMMENTS == $current['token_id']) {
 				// includes empty lines for later counting
 				// while debugging in case of syntax error
 				if (($count = $current['lines']) > 0) {
@@ -108,12 +108,12 @@ class SyntaxAnalyzer
 				// to the correct token type whenever the user
 				// does specify url without an initial slash. 
 				if (
-					Tokenizer::ROUTEX_HANDLER == $current['token_id'] &&
-					Tokenizer::ROUTEX_VERB == ($last['token_id'] ?? 0) &&
-					Tokenizer::ROUTEX_VERB == $context
+					Token::RT_HANDLER == $current['token_id'] &&
+					Token::RT_VERB == ($last['token_id'] ?? 0) &&
+					Token::RT_VERB == $context
 				) {
-					$current['token_id'] = Tokenizer::ROUTEX_URI;
-					$current['token_name'] = Tokenizer::ROUTEX_TOKEN_NAMES[Tokenizer::ROUTEX_URI];
+					$current['token_id'] = Token::RT_URI;
+					$current['token_name'] = Token::TOKEN_NAMES[Token::RT_URI];
 				}
 				//
 				$line[] = $current;
@@ -193,8 +193,8 @@ class SyntaxAnalyzer
 					return true;
 				} else {
 					if (!empty($sequence[1])) {
-						$expected[] = Tokenizer::ROUTEX_TOKEN_NAMES[$sequence[1]]
-							?? Tokenizer::ROUTEX_TOKEN_NAMES[Tokenizer::ROUTEX_UNKNOWN];
+						$expected[] = Token::TOKEN_NAMES[$sequence[1]]
+							?? Token::TOKEN_NAMES[Token::RT_UNKNOWN];
 					}
 				}
 			}
