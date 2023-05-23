@@ -10,6 +10,7 @@ class Tokenizer
 
 	protected const NEWLINE_VALUE = '__NEWLINE__';
 
+	public const ROUTEX_UNKNOWN = 0; 
 	public const ROUTEX_NEWLINE = 1;
 	public const ROUTEX_COMMENTS = 2;
 	public const ROUTEX_KEYWORD_WITH = 11;
@@ -39,6 +40,7 @@ class Tokenizer
 	];
 
 	public const ROUTEX_TOKEN_NAMES = [
+		self::ROUTEX_UNKNOWN => 'ROUTEX_UNKNOWN',
 		self::ROUTEX_NEWLINE => 'ROUTEX_NEWLINE',
 		self::ROUTEX_COMMENTS => 'ROUTEX_COMMENTS',
 		self::ROUTEX_KEYWORD_WITH => 'ROUTEX_KEYWORD_WITH',
@@ -112,12 +114,7 @@ class Tokenizer
 			//
 			foreach (self::ROUTEX_TOKEN_SPEC as $id => $regex) {
 				if (self::NEWLINE_VALUE == $token) {
-					$classified[] = [
-						'token' => PHP_EOL,
-						'token_id' => self::ROUTEX_NEWLINE,
-						'token_name' => self::ROUTEX_TOKEN_NAMES[self::ROUTEX_NEWLINE],
-						'lines' => 1
-					];
+					$classified[] = self::classifyToken(PHP_EOL, self::ROUTEX_NEWLINE, 1);
 					$recognized = true;
 					break;
 				}
@@ -131,30 +128,30 @@ class Tokenizer
 						$lines = 0;
 					}
 					//
-					$classified[] = [
-						'token' => $token,
-						'token_id' => $id,
-						'token_name' => self::ROUTEX_TOKEN_NAMES[$id],
-						'lines' => $lines
-					];
-					//
+					$classified[] = self::classifyToken($token, $id, $lines);
 					$recognized = true;
 					break;
 				}
 			}
 			//
 			if (!$recognized) {
-				$classified[] = [
-					'token' => $token,
-					'token_id' => 0,
-					'token_name' => 'ROUTEX_UNKNOWN',
-					'lines' => NULL
-				];
+				$classified[] = self::classifyToken($token, 0, null);
 			}
 		}
 		//
 		return $classified;
 	}
+
+	protected static function classifyToken($token, $id, $lines = null)
+	{
+		return [
+			'token' => $token,
+			'token_id' => $id,
+			'token_name' => self::ROUTEX_TOKEN_NAMES[$id],
+			'lines' => $lines
+		];
+	}
+
 }
 
 
