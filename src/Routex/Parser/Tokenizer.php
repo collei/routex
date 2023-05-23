@@ -10,49 +10,19 @@ class Tokenizer
 
 	protected const NEWLINE_VALUE = '__NEWLINE__';
 
-	public const ROUTEX_UNKNOWN = 0; 
-	public const ROUTEX_NEWLINE = 1;
-	public const ROUTEX_COMMENTS = 2;
-	public const ROUTEX_KEYWORD_WITH = 11;
-	public const ROUTEX_KEYWORD_WITHOUT = 12;
-	public const ROUTEX_KEY_PREFIX = 13;
-	public const ROUTEX_KEY_NAME = 14;
-	public const ROUTEX_KEY_CONTROLLER = 15;
-	public const ROUTEX_KEY_MIDDLEWARE = 16;
-	public const ROUTEX_VERB = 31;
-	public const ROUTEX_HANDLER = 32;
-	public const ROUTEX_NAME = 33;
-	public const ROUTEX_URI = 34;
-
-	public const ROUTEX_TOKEN_SPEC = [
-		self::ROUTEX_NEWLINE => self::RGX_NEWLINE_ISOLATED,
-		self::ROUTEX_COMMENTS => self::RGX_COMMENT_ISOLATED,
-		self::ROUTEX_KEYWORD_WITH => '/^(within|with)$/',
-		self::ROUTEX_KEYWORD_WITHOUT => '/^without$/',
-		self::ROUTEX_KEY_PREFIX => '/^prefix$/',
-		self::ROUTEX_KEY_NAME => '/^name$/',
-		self::ROUTEX_KEY_CONTROLLER => '/^controller$/',
-		self::ROUTEX_KEY_MIDDLEWARE => '/^middleware$/',
-		self::ROUTEX_VERB => '/^(?P<verb>(?>get|post|patch|put|head|options|delete)|any:\w+(?>\,\w+)*|any)$/',
-		self::ROUTEX_HANDLER => '/^(?>(?P<handler>\w+)(?>\@(?P<method>\w+))?)$/',
-		self::ROUTEX_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
-		self::ROUTEX_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/'
-	];
-
-	public const ROUTEX_TOKEN_NAMES = [
-		self::ROUTEX_UNKNOWN => 'ROUTEX_UNKNOWN',
-		self::ROUTEX_NEWLINE => 'ROUTEX_NEWLINE',
-		self::ROUTEX_COMMENTS => 'ROUTEX_COMMENTS',
-		self::ROUTEX_KEYWORD_WITH => 'ROUTEX_KEYWORD_WITH',
-		self::ROUTEX_KEYWORD_WITHOUT => 'ROUTEX_KEYWORD_WITHOUT',
-		self::ROUTEX_KEY_PREFIX => 'ROUTEX_KEY_PREFIX',
-		self::ROUTEX_KEY_NAME => 'ROUTEX_KEY_NAME',
-		self::ROUTEX_KEY_CONTROLLER => 'ROUTEX_KEY_CONTROLLER',
-		self::ROUTEX_KEY_MIDDLEWARE => 'ROUTEX_KEY_MIDDLEWARE',
-		self::ROUTEX_VERB => 'ROUTEX_VERB',
-		self::ROUTEX_HANDLER => 'ROUTEX_HANDLER',
-		self::ROUTEX_NAME => 'ROUTEX_NAME',
-		self::ROUTEX_URI => 'ROUTEX_URI'
+	public const TOKEN_SPEC = [
+		Token::RT_NEWLINE => self::RGX_NEWLINE_ISOLATED,
+		Token::RT_COMMENTS => self::RGX_COMMENT_ISOLATED,
+		Token::RT_KEYWORD_WITH => '/^(within|with)$/',
+		Token::RT_KEYWORD_WITHOUT => '/^without$/',
+		Token::RT_KEY_PREFIX => '/^prefix$/',
+		Token::RT_KEY_NAME => '/^name$/',
+		Token::RT_KEY_CONTROLLER => '/^controller$/',
+		Token::RT_KEY_MIDDLEWARE => '/^middleware$/',
+		Token::RT_VERB => '/^(?P<verb>(?>get|post|patch|put|head|options|delete)|any:\w+(?>\,\w+)*|any)$/',
+		Token::RT_HANDLER => '/^(?>(?P<handler>\w+)(?>\@(?P<method>\w+))?)$/',
+		Token::RT_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
+		Token::RT_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/'
 	];
 
 	public static function tokenize($text)
@@ -112,16 +82,16 @@ class Tokenizer
 				continue;
 			}
 			//
-			foreach (self::ROUTEX_TOKEN_SPEC as $id => $regex) {
+			foreach (self::TOKEN_SPEC as $id => $regex) {
 				if (self::NEWLINE_VALUE == $token) {
-					$classified[] = self::classifyToken(PHP_EOL, self::ROUTEX_NEWLINE, 1);
+					$classified[] = self::classifyToken(PHP_EOL, Token::RT_NEWLINE, 1);
 					$recognized = true;
 					break;
 				}
 				//
 				if (preg_match($regex, $token)) {
 					//
-					if (self::ROUTEX_COMMENTS == $id) {
+					if (Token::RT_COMMENTS == $id) {
 						$token = self::restoreComments($token);
 						$lines = self::tokenLines($token);
 					} else {
@@ -147,7 +117,7 @@ class Tokenizer
 		return [
 			'token' => $token,
 			'token_id' => $id,
-			'token_name' => self::ROUTEX_TOKEN_NAMES[$id],
+			'token_name' => Token::TOKEN_NAMES[$id],
 			'lines' => $lines
 		];
 	}
