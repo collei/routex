@@ -29,9 +29,15 @@ $tokens = Tokenizer::tokenize(
 	$source = file_get_contents($example)
 );
 
-$lines = SyntaxAnalyzer::linearize($tokens);
+$lines = SyntaxAnalyzer::breakInLines($tokens);
+
+SyntaxAnalyzer::syntaxCheck($lines, $errors);
 
 ?>
+<fieldset>
+	<legend>Syntax Errors (if any)</legend>
+	<fieldset><pre><?php echo print_r($errors,true); ?></pre></fieldset>
+</fieldset>
 <fieldset>
 	<legend>Parsed Tokens</legend>
 	<fieldset>
