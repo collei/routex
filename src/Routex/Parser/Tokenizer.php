@@ -4,25 +4,26 @@ namespace Routex\Parser;
 class Tokenizer
 {
 	protected const RGX_TOKENIZER = '/(\s*"(?>[^"]+)"\s*|\s*\'(?>[^\']+)\'\s*|\s+)/';
-	protected const RGX_COMMENT = '/(?:\/\*[\s\S]*?\*\/)|(?:\/\/[^\r\n]*)|(?:#[^\r\n]*)/m';
+	protected const RGX_COMMENT = Token::TOKEN_REGEX[Token::RT_COMMENTS];
 	protected const RGX_COMMENT_ISOLATED = '/__X([0-9A-Fa-f]*)X__/';
+	protected const RGX_NEWLINE = Token::TOKEN_REGEX[Token::RT_NEWLINE];
 	protected const RGX_NEWLINE_ISOLATED = '/__NEWLINE__/';
 
-	protected const NEWLINE_VALUE = '__NEWLINE__';
+	protected const PLACEHOLDER_NEWLINE = '__NEWLINE__';
 
 	public const TOKEN_SPEC = [
 		Token::RT_NEWLINE => self::RGX_NEWLINE_ISOLATED,
 		Token::RT_COMMENTS => self::RGX_COMMENT_ISOLATED,
-		Token::RT_KEYWORD_WITH => '/^(within|with)$/',
-		Token::RT_KEYWORD_WITHOUT => '/^without$/',
-		Token::RT_KEY_PREFIX => '/^prefix$/',
-		Token::RT_KEY_NAME => '/^name$/',
-		Token::RT_KEY_CONTROLLER => '/^controller$/',
-		Token::RT_KEY_MIDDLEWARE => '/^middleware$/',
-		Token::RT_VERB => '/^(?P<verb>(?>get|post|patch|put|head|options|delete)|any:\w+(?>\,\w+)*|any)$/',
-		Token::RT_HANDLER => '/^(?>(?P<handler>\w+)(?>\@(?P<method>\w+))?)$/',
-		Token::RT_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
-		Token::RT_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/'
+		Token::RT_KEYWORD_WITH => Token::TOKEN_REGEX[Token::RT_KEYWORD_WITH],
+		Token::RT_KEYWORD_WITHOUT => Token::TOKEN_REGEX[Token::RT_KEYWORD_WITHOUT],
+		Token::RT_KEY_PREFIX => Token::TOKEN_REGEX[Token::RT_KEY_PREFIX],
+		Token::RT_KEY_NAME => Token::TOKEN_REGEX[Token::RT_KEY_NAME],
+		Token::RT_KEY_CONTROLLER => Token::TOKEN_REGEX[Token::RT_KEY_CONTROLLER],
+		Token::RT_KEY_MIDDLEWARE => Token::TOKEN_REGEX[Token::RT_KEY_MIDDLEWARE],
+		Token::RT_VERB => Token::TOKEN_REGEX[Token::RT_VERB],
+		Token::RT_HANDLER => Token::TOKEN_REGEX[Token::RT_HANDLER],
+		Token::RT_NAME => Token::TOKEN_REGEX[Token::RT_NAME],
+		Token::RT_URI => Token::TOKEN_REGEX[Token::RT_URI]
 	];
 
 	public static function tokenize($text)
@@ -46,13 +47,25 @@ class Tokenizer
 		}, $source);
 	}
 
+	protected static function isolateNewlines($source)
+	{
+		return str_replace(
+			["\r\n", "\n", PHP_EOL],
+			[PHP_EOL, PHP_EOL, self::PLACEHOLDER_NEWLINE . ' '],
+			$source
+		);
+	}
+
+	protected static function restoreNewlines($source)
+	{
+		return str_replace(self::PLACEHOLDER_NEWLINE, PHP_EOL, $source);
+	}
+
 	protected static function breakInTokens($source)
 	{
 		$source = self::isolateComments($source);
-
-		$source = str_replace(["\r\n","\n"], PHP_EOL, $source);
-		$source = str_replace(PHP_EOL, self::NEWLINE_VALUE . ' ', $source);
-
+		$source = self::isolateNewlines($source);
+		//
 		return preg_split(
 			self::RGX_TOKENIZER,
 			$source,
@@ -63,7 +76,7 @@ class Tokenizer
 
 	protected static function tokenLines($literal)
 	{
-		if ($lines = explode(PHP_EOL, $literal)) {
+		if ($lines = preg_split(self::RGX_NEWLINE, $literal)) {
 			return count($lines) - 1;
 		}
 		//
@@ -83,7 +96,7 @@ class Tokenizer
 			}
 			//
 			foreach (self::TOKEN_SPEC as $id => $regex) {
-				if (self::NEWLINE_VALUE == $token) {
+				if (self::PLACEHOLDER_NEWLINE == $token) {
 					$classified[] = self::classifyToken(PHP_EOL, Token::RT_NEWLINE, 1);
 					$recognized = true;
 					break;
@@ -114,6 +127,8 @@ class Tokenizer
 
 	protected static function classifyToken($token, $id, $lines = null)
 	{
+		//return Token::make($id, $token)->line
+
 		return [
 			'token' => $token,
 			'token_id' => $id,

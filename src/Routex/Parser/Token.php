@@ -33,10 +33,32 @@ class Token
 		self::RT_URI => 'RT_URI'
 	];
 
+	public const TOKEN_REGEX = [
+		self::RT_NEWLINE => '/\r?\n/',
+		self::RT_COMMENTS => '/(?:\/\*[\s\S]*?\*\/)|(?:\/\/[^\r\n]*)|(?:\#[^\r\n]*)/m',
+		self::RT_KEYWORD_WITH => '/^(within|with)$/',
+		self::RT_KEYWORD_WITHOUT => '/^without$/',
+		self::RT_KEY_PREFIX => '/^prefix$/',
+		self::RT_KEY_NAME => '/^name$/',
+		self::RT_KEY_CONTROLLER => '/^controller$/',
+		self::RT_KEY_MIDDLEWARE => '/^middleware$/',
+		self::RT_VERB => '/^(?P<verb>(?>get|post|patch|put|head|options|delete)|any:\w+(?>\,\w+)*|any)$/',
+		self::RT_HANDLER => '/^(?>(?P<handler>\w+)(?>\@(?P<method>\w+))?)$/',
+		self::RT_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
+		self::RT_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/'
+	];
+
 	protected $id;
 	protected $token;
 	protected $line;
 	protected $position;
+	protected $lineCount;
+
+	public function __construct($id, $token)
+	{
+		$this->id($id);
+		$this->token($token);
+	}
 
 	public function __get(string $name)
 	{
@@ -45,14 +67,7 @@ class Token
 		}
 		//
 		if ('name' === $name) {
-			return self::TOKEN_NAMES[$this->id];
-		}
-	}
-
-	public function __call(string $name, array $arguments)
-	{
-		if (property_exists($this, $name) && ('id' !== $name)) {
-			return $this->$name = $arguments[0] ?? null;
+			return self::TOKEN_NAMES[$this->id] ?? self::TOKEN_NAMES[self::RT_UNKNOWN];
 		}
 	}
 
@@ -67,6 +82,36 @@ class Token
 		];
 	}
 
-	
+	public function id($id)
+	{
+		$this->id = $id;
+		//
+		return $this;
+	}
 
+	public function token($token)
+	{
+		$this->token = $token;
+		//
+		return $this;
+	}
+
+	public function line($line)
+	{
+		$this->line = $line;
+		//
+		return $this;
+	}
+
+	public function position($position)
+	{
+		$this->position = $position;
+		//
+		return $this;
+	}
+
+	public static function make($id, $token)
+	{
+		return new self($id, $token);
+	}
 }
