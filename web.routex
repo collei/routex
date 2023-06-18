@@ -15,9 +15,9 @@ with prefix /notas controller IndexController name 'nota'
 
 	with prefix /russos controller RussoController name 'russo'
 		get / listar 'list'
-		get /{item} mostrar 'show'
-		get add adicionar 'add'
-		post /add/me doAdicionar 'add-post'
+		any /{item} mostrar 'show'
+		get /add adicionar 'add'
+		post|put|patch /add/me doAdicionar 'add-post'
 	without
 
 	get /conta-resma contaResmasDe 'conta-resmas'
