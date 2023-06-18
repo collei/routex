@@ -53,7 +53,6 @@ foreach ($lines as $n => $line) {
 	//
 	foreach ($line as $token) {
 		$item = $token;
-		unset($item['token']);
 		//
 		?>
 				<td width="10%"><pre><?=(print_r($item,true))?></pre></td>
