@@ -75,30 +75,30 @@ class SyntaxAnalyzer
 			//
 			// defines the context for the current line being started.
 			if (is_null($context) && (
-				Token::RT_VERB == $current['token_id'] ||
-				Token::RT_KEYWORD_WITH == $current['token_id'] ||
-				Token::RT_KEYWORD_WITHOUT == $current['token_id']
+				Token::RT_VERB == $current->id ||
+				Token::RT_KEYWORD_WITH == $current->id ||
+				Token::RT_KEYWORD_WITHOUT == $current->id
 			)) {
-				$context = $current['token_id'];
+				$context = $current->id;
 			}
 			//
 			if (is_null($last)) {
 				// insert an empty line for the counter, if any
-				if (Token::RT_NEWLINE == $current['token_id']) {
+				if (Token::RT_NEWLINE == $current->id) {
 					$lines[] = $emptyLine;
 				}
 				//
 				continue;
 			}
 			//
-			if (Token::RT_NEWLINE == $current['token_id']) {
+			if (Token::RT_NEWLINE == $current->id) {
 				$lines[] = $line ?: $emptyLine;
 				$line = [];
 				$context = null;
-			} elseif (Token::RT_COMMENTS == $current['token_id']) {
+			} elseif (Token::RT_COMMENTS == $current->id) {
 				// includes empty lines for later counting
 				// while debugging in case of syntax error
-				if (($count = $current['lines']) > 0) {
+				if (($count = $current->lineCount) > 0) {
 					for ($i = 0; $i < $count; $i++) {
 						$lines[] = $emptyLine;
 					}
@@ -108,12 +108,11 @@ class SyntaxAnalyzer
 				// to the correct token type whenever the user
 				// does specify url without an initial slash. 
 				if (
-					Token::RT_HANDLER == $current['token_id'] &&
-					Token::RT_VERB == ($last['token_id'] ?? 0) &&
+					Token::RT_HANDLER == $current->id &&
+					Token::RT_VERB == ($last->id ?? 0) &&
 					Token::RT_VERB == $context
 				) {
-					$current['token_id'] = Token::RT_URI;
-					$current['token_name'] = Token::TOKEN_NAMES[Token::RT_URI];
+					$current->id(Token::RT_URI);
 				}
 				//
 				$line[] = $current;
@@ -146,16 +145,16 @@ class SyntaxAnalyzer
 			list($last, $current) = array($current, $token);
 			//
 			if (is_null($last)) {
-				$context = $token['token_id'] ?? 0;
+				$context = $token->id ?? 0;
 				continue;
 			}
 			//
 			if (! self::isValidSequence($last, $current, $context, $expected)) {
 				$error = sprintf(
 					'After (%s) was expected (%s) but found (%s).',
-					$last['token'],
+					$last->token,
 					implode(' or ', $expected),
-					$current['token']
+					$current->token
 				);
 				//
 				return false;
@@ -168,7 +167,7 @@ class SyntaxAnalyzer
 	protected static function lineFromTokens(array $tokens)
 	{
 		$line = array_map(function($token) {
-			return $token['token'] ?? $token;
+			return $token->token ?? $token;
 		}, $tokens);
 		//
 		return implode(' ', $line);
@@ -177,7 +176,7 @@ class SyntaxAnalyzer
 	protected static function isValidSequence(
 		$lastToken, $currentToken, $context, array &$expected = null
 	) {
-		$partial = array($lastToken['token_id'], $currentToken['token_id']);
+		$partial = array($lastToken->id, $currentToken->id);
 		$sequences = self::ROUTEX_VALID_SEQUENCES[$context] ?? [];
 		//
 		if (empty($sequences)) {
