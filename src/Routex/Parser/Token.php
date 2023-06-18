@@ -42,10 +42,10 @@ class Token
 		self::RT_KEY_NAME => '/^name$/',
 		self::RT_KEY_CONTROLLER => '/^controller$/',
 		self::RT_KEY_MIDDLEWARE => '/^middleware$/',
-		self::RT_VERB => '/^(?P<verb>(?>get|post|patch|put|head|options|delete)|any:\w+(?>\,\w+)*|any)$/',
+		self::RT_VERB => '/^(?P<verb>(?>(?>get|post|patch|put|head|options|delete)(?>\|(?>get|post|patch|put|head|options|delete))*)|(?>get|post|patch|put|head|options|delete|any))$/',
+		self::RT_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/',
 		self::RT_HANDLER => '/^(?>(?P<handler>\w+)(?>\@(?P<method>\w+))?)$/',
 		self::RT_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
-		self::RT_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/'
 	];
 
 	protected $id;
@@ -103,6 +103,13 @@ class Token
 		return $this;
 	}
 
+	public function lineCount($lineCount)
+	{
+		$this->lineCount = $lineCount;
+		//
+		return $this;
+	}
+
 	public function position($position)
 	{
 		$this->position = $position;
@@ -114,4 +121,5 @@ class Token
 	{
 		return new self($id, $token);
 	}
+
 }

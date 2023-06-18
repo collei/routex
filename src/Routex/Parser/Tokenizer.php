@@ -20,10 +20,10 @@ class Tokenizer
 		Token::RT_KEY_NAME => Token::TOKEN_REGEX[Token::RT_KEY_NAME],
 		Token::RT_KEY_CONTROLLER => Token::TOKEN_REGEX[Token::RT_KEY_CONTROLLER],
 		Token::RT_KEY_MIDDLEWARE => Token::TOKEN_REGEX[Token::RT_KEY_MIDDLEWARE],
+		Token::RT_URI => Token::TOKEN_REGEX[Token::RT_URI],
 		Token::RT_VERB => Token::TOKEN_REGEX[Token::RT_VERB],
 		Token::RT_HANDLER => Token::TOKEN_REGEX[Token::RT_HANDLER],
 		Token::RT_NAME => Token::TOKEN_REGEX[Token::RT_NAME],
-		Token::RT_URI => Token::TOKEN_REGEX[Token::RT_URI]
 	];
 
 	public static function tokenize($text)
@@ -127,14 +127,7 @@ class Tokenizer
 
 	protected static function classifyToken($token, $id, $lines = null)
 	{
-		//return Token::make($id, $token)->line
-
-		return [
-			'token' => $token,
-			'token_id' => $id,
-			'token_name' => Token::TOKEN_NAMES[$id],
-			'lines' => $lines
-		];
+		return Token::make($id, $token)->lineCount($lines);
 	}
 
 }
