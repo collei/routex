@@ -5,6 +5,11 @@ class Route
 {
 	public const ROUTE_VERBS = ['get','patch','post','put','delete','head','options'];
 
+	protected const PARAM_SOURCE = '/\{(\w+)(\?)?\}/';
+	protected const PARAM_COMPILED = '(?P<name>[^\s?#/]+)';
+
+	protected const URI_COMPILED_TAIL = '(?>\?(?P<__querystring>[^\s#]+)?)?(?>#(?P<__hash>[^\s]+)?)?';
+
 	protected $name;
 	protected $verb;
 	protected $uri;
@@ -14,22 +19,22 @@ class Route
 
 	public static function compileUri($uri)
 	{
+		$porr = '/(?>\?(?P<querystring>[^\s#]*))?(?>#(?P<hash>[^\s]*))?/';
+
 		$uri = str_replace(['////','///','//'], '/', $uri);
-		$param_source = '/\{(\w+)(\?)?\}/';
-		$param_compiled = '(?P<name>[^\s?#/]+)';
 		$replacer = array('from' => [], 'to' => []);
 		//
-		if (preg_match_all($param_source, $uri, $matches, PREG_SET_ORDER) > 0) {
+		if (preg_match_all(self::PARAM_SOURCE, $uri, $matches, PREG_SET_ORDER) > 0) {
 			foreach ($matches as $match) {
 				$replacer['from'][] = $match[0];
-				$replacer['to'][] = str_replace('name', $match[1], $param_compiled) .
+				$replacer['to'][] = str_replace('name', $match[1], self::PARAM_COMPILED) .
 					(('?' == ($match[2] ?? '')) ? '?' : '');
 			}
 		}
 		//
 		return str_replace(
 			')?/(', ')?/?(', str_replace($replacer['from'], $replacer['to'], $uri)
-		);
+		) . self::URI_COMPILED_TAIL;
 	}
 
 	public function __construct($name, $verb, $uri, $handler)
