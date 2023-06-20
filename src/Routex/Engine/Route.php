@@ -11,13 +11,13 @@ class Route
 	protected const URI_COMPILED_TAIL = '(?>\?(?P<__querystring>[^\s#]+)?)?(?>#(?P<__hash>[^\s]+)?)?';
 
 	protected $name;
-	protected $verb;
+	protected $verbs;
 	protected $uri;
-	protected $compiledUri;
+	protected $uriRegex;
 	protected $handler;
 	protected $middleware;
 
-	public static function compileUri($uri)
+	protected static function compileUri($uri)
 	{
 		$porr = '/(?>\?(?P<querystring>[^\s#]*))?(?>#(?P<hash>[^\s]*))?/';
 
@@ -37,7 +37,7 @@ class Route
 		) . self::URI_COMPILED_TAIL . '/';
 	}
 
-	public static function matchUri($pattern, $uri, &$parameters)
+	protected static function matchUri($pattern, $uri, &$parameters)
 	{
 		$parameters = [];
 		//
@@ -58,21 +58,22 @@ class Route
 		return false;
 	}
 
-	public function __construct($name, $verb, $uri, $handler)
+	public function __construct($name, $verb, $uri, $handler, $middleware = [])
 	{
 		$this->name = $name;
 		$this->uri = $uri;
 		$this->handler = $handler;
+		$this->middleware = $middleware;
 		//
-		$this->compiledUri = self::compileUri($uri);
+		$this->uriRegex = self::compileUri($uri);
 		$this->uriParameters = [];
 		//
 		if (is_array($verb)) {
-			$this->verb = $verb;
+			$this->verbs = $verb;
 		} else {
 			$verb = strtolower($verb);
 			//
-			$this->verb = ('any' == $verb || '*' == $verb) ? self::ROUTE_VERBS : array($verb);
+			$this->verbs = ('any' == $verb || '*' == $verb) ? self::ROUTE_VERBS : array($verb);
 		}
 	}
 
@@ -83,27 +84,20 @@ class Route
 		}
 	}
 
-	public function addMiddleware($middleware)
+	public function forVerb($verb)
 	{
-		if (! in_array($middleware, $this->middleware, true)) {
-			$this->middleware[] = $middleware;
-		}
-		//
-		return $this;
+		return in_array(strtolower($verb), $this->verbs, true);
 	}
 
-	public function prependMiddleware($middleware)
+	public function matches($verb, $request, &$data)
 	{
-		if (! in_array($middleware, $this->middleware, true)) {
-			array_unshift($this->middleware, $middleware);
+		if (! $this->forVerb($verb)) {
+			return false;
 		}
 		//
-		return $this;
-	}
-
-	public function matches($request, $verb = null)
-	{
-
+		$data = [];
+		//
+		return self::matchUri($this->uriRegex, $request, $data);
 	}
 
 }

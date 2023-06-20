@@ -7,11 +7,11 @@ use Routex\Parser\Parser;
 use Routex\Engine\Route;
 
 $directions = [
-	'/book/contacts/{contact}/phones/{phone?}',
-	'/schule/{type}/{name?}/{student?}',
+	new Route('alpha','get','/book/contacts/{contact}/phones/{phone?}',null),
+	new Route('bravo','get','/schule/{type}/{name?}/{student?}',null),
 ];
 
-$sample_uris = [
+$sample_requests = [
 	'/schule/gymmnasium/Friedlichert/12485',
 	'/schule/Realschulle/Kerch?identifier=GA&number=834586&region=Schubert#SlavaUkraine',
 	'/schule/hauptschule?type=LEGO-IV',
@@ -21,19 +21,19 @@ $sample_uris = [
 
 $samples = [];
 
-foreach ($directions as $direction) {
-	$compiled = Route::compileUri($direction);
-	//
+foreach ($directions as $route) {
 	$sample = [
-		'orig' => $direction,
-		'dest' => $compiled,
+		'orig' => $route->uri,
+		'dest' => $route->uriRegex,
 		'units' => []
 	];
 	//
-	foreach ($sample_uris as $uri) {
-		$resp = Route::matchUri($compiled, $uri, $data);
-		//
-		$sample['units'][] = $resp ? compact('uri','resp','data') : compact('uri','resp');
+	foreach ($sample_requests as $request) {
+		if ($resp = $route->matches('get',$request,$data)) {
+			$sample['units'][] = compact('request','resp','data');
+		} else {
+			$sample['units'][] = compact('request','resp');
+		}
 	}
 	//
 	$samples[] = $sample;
