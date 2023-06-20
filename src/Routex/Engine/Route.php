@@ -32,9 +32,30 @@ class Route
 			}
 		}
 		//
-		return str_replace(
-			')?/(', ')?/?(', str_replace($replacer['from'], $replacer['to'], $uri)
-		) . self::URI_COMPILED_TAIL;
+		return '/' . str_replace(
+			[')?/(','/(','/'], [')?/?(','/?(','\/'], str_replace($replacer['from'], $replacer['to'], $uri)
+		) . self::URI_COMPILED_TAIL . '/';
+	}
+
+	public static function matchUri($pattern, $uri, &$parameters)
+	{
+		$parameters = [];
+		//
+		if (1 == preg_match($pattern, $uri, $data)) {
+			foreach ($data as $key => $value) {
+				if ('__querystring' == $key) {
+					parse_str($value, $values);
+					//
+					$parameters[$key] = $values;
+				} elseif (is_string($key)) {
+					$parameters[$key] = $value;
+				}
+			}
+			//
+			return true;
+		}
+		//
+		return false;
 	}
 
 	public function __construct($name, $verb, $uri, $handler)

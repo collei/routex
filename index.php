@@ -4,6 +4,47 @@ require './vendor/autoload.php';
 use Routex\Parser\Tokenizer;
 use Routex\Parser\SyntaxAnalyzer;
 use Routex\Parser\Parser;
+use Routex\Engine\Route;
+
+$directions = [
+	'/book/contacts/{contact}/phones/{phone?}',
+	'/schule/{type}/{name?}/{student?}',
+];
+
+$sample_uris = [
+	'/schule/gymmnasium/Friedlichert/12485',
+	'/schule/Realschulle/Kerch?identifier=GA&number=834586&region=Schubert#SlavaUkraine',
+	'/schule/hauptschule?type=LEGO-IV',
+	'/book/contacts/1376/phones/79857644323',
+	'/book/contacts/1376/phones?dull=no',
+];
+
+$samples = [];
+
+foreach ($directions as $direction) {
+	$compiled = Route::compileUri($direction);
+	//
+	$sample = [
+		'orig' => $direction,
+		'dest' => $compiled,
+		'units' => []
+	];
+	//
+	foreach ($sample_uris as $uri) {
+		$resp = Route::matchUri($compiled, $uri, $data);
+		//
+		$sample['units'][] = $resp ? compact('uri','resp','data') : compact('uri','resp');
+	}
+	//
+	$samples[] = $sample;
+}
+
+?>
+<fieldset>
+	<legend>Realschulle</legend>
+	<fieldset><textarea style="width:95% !important" rows="20"><?php echo print_r($samples,true); ?></textarea></fieldset>
+</fieldset>
+<?php
 
 $example = './web.routex';
 
