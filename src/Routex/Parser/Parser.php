@@ -4,7 +4,7 @@ namespace Routex\Parser;
 class Parser
 {
 	protected const ROUTEX_ROUTE = '/^[ \t]*(?P<verb>(?>(?>get|post|patch|put|head|options|delete)(?>\|(?>get|post|patch|put|head|options|delete))*)|(?>get|post|patch|put|head|options|delete|any))[ \t]+(?P<uri>(\/?[\w\-.]+|\/?\{\??\w+(=[^\s\/]+)?\}|\/)+)[ \t]+(?P<handler>\w+(\@\w+)?)([ \t]+([\'"]?)(?P<name>[\w\-.]+)\8)?$/m';
-	protected const ROUTEX_GROUP_START = '/^[ \t]*with(([ \t]+prefix[ \t]+(?P<prefix>\S+))|([ \t]+controller[ \t]+(?P<controller>\w+))|([ \t]+name[ \t]+([\'"]?)(?P<name>[\w\-.]+)(\7))|([ \t]+middleware[ \t]+(?P<middleware>[\w\-,]+)))*/m';
+	protected const ROUTEX_GROUP_START = '/^[ \t]*with(([ \t]+prefix[ \t]+(?P<prefix>\S+))|([ \t]+controller[ \t]+(?P<controller>\w+))|([ \t]+name[ \t]+([\'"]?)(?P<name>[\w\-.]+)(\7))|([ \t]+middleware[ \t]+(?P<middleware>(?>\w+(?>[ \t]*\,[ \t]*\w+)*))))*/m';
 	protected const ROUTEX_GROUP_END = '/^[ \t]*without(([ \t]+(prefix))|([ \t]+(controller))|([ \t]+(name))|([ \t]+(middleware)))*.*$/';
 	protected const ROUTEX_COMMENTS = '/(?:\/\*[\s\S]*?\*\/)|(?:\/\/[^\r\n]*(\r\n|\n))|(?:#[^\r\n]*(\r\n|\n))/m';
 
@@ -78,7 +78,7 @@ class Parser
 	protected function parseRoutexStatement($line, $number)
 	{
 		if (preg_match(self::ROUTEX_ROUTE, $line, $args)) {
-			$routex = ['verb'=>'','uri'=>'','handler'=>'','name'=>''];
+			$routex = ['verb'=>'','uri'=>'','handler'=>'','name'=>'','middleware'=>[]];
 			$current = $this->contextCurrent();
 			//
 			foreach ($routex as $key => $value) {
@@ -93,6 +93,9 @@ class Parser
 						? ($args[$key] ?? '')
 						: (isset($args[$key]) ? ($controller.'@'.$args[$key]) : $controller);
 					$routex[$key] = $handler;
+				} elseif ('middleware' == $key) {
+					$middleware = $current['middleware'];
+					$routex[$key][] = $middleware;
 				} elseif ('name' == $key) {
 					$glue = self::ROUTEX_CURRENT_AGGREGATOR['name'];
 					$name = $current[$key];

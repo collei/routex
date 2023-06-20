@@ -9,11 +9,11 @@ with prefix /book controller ContactController
 	get /{item} show 'book-item'
 without
 
-with prefix /notas controller IndexController name 'nota'
+with controller IndexController prefix /notas middleware AdminFilter, GoodsScanner, PackageVirusScan name 'nota'
 	get /{nota}/em/{formato} chegou2 'nota-formato'
 	get /{nota} chegou 'nota'
 
-	with prefix /russos controller RussoController name 'russo'
+	with prefix /russos controller RussoController name 'russo' middleware Fatima
 		get / listar 'list'
 		any /{item} mostrar 'show'
 		get /add adicionar 'add'

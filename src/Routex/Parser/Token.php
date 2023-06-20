@@ -6,6 +6,7 @@ class Token
 	public const RT_UNKNOWN = 0; 
 	public const RT_NEWLINE = 1;
 	public const RT_COMMENTS = 2;
+	public const RT_COMMA = 3;
 	public const RT_KEYWORD_WITH = 11;
 	public const RT_KEYWORD_WITHOUT = 12;
 	public const RT_KEY_PREFIX = 13;
@@ -16,11 +17,13 @@ class Token
 	public const RT_HANDLER = 32;
 	public const RT_NAME = 33;
 	public const RT_URI = 34;
+	public const RT_MIDDLEWARE = 35;
 
 	public const TOKEN_NAMES = [
 		self::RT_UNKNOWN => 'RT_UNKNOWN',
 		self::RT_NEWLINE => 'RT_NEWLINE',
 		self::RT_COMMENTS => 'RT_COMMENTS',
+		self::RT_COMMA => 'RT_COMMA',
 		self::RT_KEYWORD_WITH => 'RT_KEYWORD_WITH',
 		self::RT_KEYWORD_WITHOUT => 'RT_KEYWORD_WITHOUT',
 		self::RT_KEY_PREFIX => 'RT_KEY_PREFIX',
@@ -30,12 +33,14 @@ class Token
 		self::RT_VERB => 'RT_VERB',
 		self::RT_HANDLER => 'RT_HANDLER',
 		self::RT_NAME => 'RT_NAME',
-		self::RT_URI => 'RT_URI'
+		self::RT_URI => 'RT_URI',
+		self::RT_MIDDLEWARE => 'RT_MIDDLEWARE'
 	];
 
 	public const TOKEN_REGEX = [
 		self::RT_NEWLINE => '/\r?\n/',
 		self::RT_COMMENTS => '/(?:\/\*[\s\S]*?\*\/)|(?:\/\/[^\r\n]*)|(?:\#[^\r\n]*)/m',
+		self::RT_COMMA => '/\s*\,\s*/',
 		self::RT_KEYWORD_WITH => '/^(within|with)$/',
 		self::RT_KEYWORD_WITHOUT => '/^without$/',
 		self::RT_KEY_PREFIX => '/^prefix$/',
@@ -44,8 +49,9 @@ class Token
 		self::RT_KEY_MIDDLEWARE => '/^middleware$/',
 		self::RT_VERB => '/^(?P<verb>(?>(?>get|post|patch|put|head|options|delete)(?>\|(?>get|post|patch|put|head|options|delete))*)|(?>get|post|patch|put|head|options|delete|any))$/',
 		self::RT_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/',
-		self::RT_HANDLER => '/^(?>(?P<handler>\w+)(?>\@(?P<method>\w+))?)$/',
+		self::RT_HANDLER => '/^(?>(?P<handler>[A-Za-z0-9_]+)(?>\@(?P<method>[A-Za-z0-9_]+))?)$/',
 		self::RT_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
+		self::RT_MIDDLEWARE => '/^(?P<middleware>[A-Za-z0-9_]+)$/',
 	];
 
 	protected $id;

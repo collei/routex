@@ -3,7 +3,7 @@ namespace Routex\Parser;
 
 class Tokenizer
 {
-	protected const RGX_TOKENIZER = '/(\s*"(?>[^"]+)"\s*|\s*\'(?>[^\']+)\'\s*|\s+)/';
+	protected const RGX_TOKENIZER = '/(\s*"(?>[^"]+)"\s*|\s*\'(?>[^\']+)\'\s*|\s*\,\s*|\s+)/';
 	protected const RGX_COMMENT = Token::TOKEN_REGEX[Token::RT_COMMENTS];
 	protected const RGX_COMMENT_ISOLATED = '/__X([0-9A-Fa-f]*)X__/';
 	protected const RGX_NEWLINE = Token::TOKEN_REGEX[Token::RT_NEWLINE];
@@ -11,9 +11,17 @@ class Tokenizer
 
 	protected const PLACEHOLDER_NEWLINE = '__NEWLINE__';
 
+	protected const TOKEN_KEYS = [
+		Token::RT_KEY_PREFIX,
+		Token::RT_KEY_NAME,
+		Token::RT_KEY_CONTROLLER,
+		Token::RT_KEY_MIDDLEWARE,
+	];
+
 	public const TOKEN_SPEC = [
 		Token::RT_NEWLINE => self::RGX_NEWLINE_ISOLATED,
 		Token::RT_COMMENTS => self::RGX_COMMENT_ISOLATED,
+		Token::RT_COMMA => Token::TOKEN_REGEX[Token::RT_COMMA],
 		Token::RT_KEYWORD_WITH => Token::TOKEN_REGEX[Token::RT_KEYWORD_WITH],
 		Token::RT_KEYWORD_WITHOUT => Token::TOKEN_REGEX[Token::RT_KEYWORD_WITHOUT],
 		Token::RT_KEY_PREFIX => Token::TOKEN_REGEX[Token::RT_KEY_PREFIX],
@@ -24,6 +32,7 @@ class Tokenizer
 		Token::RT_VERB => Token::TOKEN_REGEX[Token::RT_VERB],
 		Token::RT_HANDLER => Token::TOKEN_REGEX[Token::RT_HANDLER],
 		Token::RT_NAME => Token::TOKEN_REGEX[Token::RT_NAME],
+		Token::RT_MIDDLEWARE => Token::TOKEN_REGEX[Token::RT_MIDDLEWARE],
 	];
 
 	public static function tokenize($text)
@@ -86,6 +95,7 @@ class Tokenizer
 	protected static function classifyTokens(array $tokens)
 	{
 		$classified = [];
+		$current_key = null; 
 		//
 		foreach ($tokens as $token) {
 			$token = trim($token);
@@ -99,6 +109,7 @@ class Tokenizer
 				if (self::PLACEHOLDER_NEWLINE == $token) {
 					$classified[] = self::classifyToken(PHP_EOL, Token::RT_NEWLINE, 1);
 					$recognized = true;
+					$current_key = null;
 					break;
 				}
 				//
@@ -109,6 +120,14 @@ class Tokenizer
 						$lines = self::tokenLines($token);
 					} else {
 						$lines = 0;
+					}
+					//
+					if (in_array($id, self::TOKEN_KEYS)) {
+						$current_key = $id;
+					}
+					//
+					if ((Token::RT_KEY_MIDDLEWARE == $current_key) && (Token::RT_HANDLER == $id)) {
+						$id = Token::RT_MIDDLEWARE;
 					}
 					//
 					$classified[] = self::classifyToken($token, $id, $lines);
