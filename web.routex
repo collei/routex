@@ -15,7 +15,7 @@ with controller IndexController prefix /notas middleware AdminFilter, GoodsScann
 
 	with prefix /russos controller RussoController name 'russo' middleware Fatima
 		get / listar 'list'
-		any /{item} mostrar 'show'
+		any /{item} mostrar 'show' middleware Tamisa, AugustoVasconcellosLogger
 		get /add adicionar 'add'
 		post|put|patch /add/me doAdicionar 'add-post'
 	without
