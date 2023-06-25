@@ -57,7 +57,8 @@ $routes = new Parser($example);
 </fieldset>
 <?php
 
-$result = $routes->parse()->routes();
+//$result = $routes->parse()->routes();
+$result = $routes->parse()->routesAsEngineRoutes();
 
 ?>
 <fieldset>

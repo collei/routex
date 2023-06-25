@@ -58,12 +58,27 @@ class Route
 		return false;
 	}
 
+	protected static function normalizeMiddleware($middleware)
+	{
+		$normalized = [];
+		//
+		foreach ($middleware as $key => $value) {
+			if (is_array($value)) {
+				$normalized = $normalized + self::normalizeMiddleware($value);
+			} else {
+				$normalized[] = $value;
+			}
+		}
+		//
+		return $normalized;
+	}
+
 	public function __construct($name, $verb, $uri, $handler, $middleware = [])
 	{
 		$this->name = $name;
 		$this->uri = $uri;
 		$this->handler = $handler;
-		$this->middleware = $middleware;
+		$this->middleware = self::normalizeMiddleware($middleware);
 		//
 		$this->uriRegex = self::compileUri($uri);
 		$this->uriParameters = [];

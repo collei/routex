@@ -51,7 +51,7 @@ class Token
 		self::RT_URI => '/^(\/([\w\-.]+|{\??\w+(=[^}\s]+)?})(\/[\w\-.]+|\/{\??\w+(=[^}\s]+)?})*|\/)$/',
 		self::RT_HANDLER => '/^(?>(?P<handler>[A-Za-z0-9_]+)(?>\@(?P<method>[A-Za-z0-9_]+))?)$/',
 		self::RT_NAME => '/^("([^"\\\\]*(\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(\\\\.[^\'\\\\]*)*)\')$/',
-		self::RT_MIDDLEWARE => '/^(?P<middleware>[A-Za-z0-9_]+)$/',
+		self::RT_MIDDLEWARE => '/^(?P<middleware>\-?[A-Za-z0-9_]+)$/',
 	];
 
 	protected $id;
