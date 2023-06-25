@@ -51,12 +51,16 @@ class Parser
 		$engineRoutes = [];
 		//
 		foreach ($this->routexes as $routex) {
+			$middleware = is_array($routex['middleware'])
+				? $routex['middleware']
+				: array($routex['middleware']);
+			//
 			$engineRoutes[] = new Route(
 				$routex['name'],
 				explode('|', $routex['verb']),
 				$routex['uri'],
 				$routex['handler'],
-				$routex['middleware']
+				...$middleware
 			);
 		}
 		//
