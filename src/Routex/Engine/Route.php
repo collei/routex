@@ -73,7 +73,7 @@ class Route
 		return $normalized;
 	}
 
-	public function __construct($name, $verb, $uri, $handler, $middleware = [])
+	public function __construct($name, $verb, $uri, $handler, ...$middleware)
 	{
 		$this->name = $name;
 		$this->uri = $uri;
