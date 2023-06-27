@@ -2,6 +2,7 @@
 namespace Routex\Parser;
 
 use Routex\Engine\Route;
+use Closure;
 
 class Parser
 {
@@ -65,6 +66,17 @@ class Parser
 		}
 		//
 		return $engineRoutes;
+	}
+
+	public function routesAs(Closure $converter)
+	{
+		$results = [];
+		//
+		foreach ($this->routexes as $key => $route) {
+			$results[] = $converter($route);
+		}
+		//
+		return $results;
 	}
 
 	protected function loadFile($file)
