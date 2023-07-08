@@ -3,20 +3,63 @@ namespace Routex\Engine;
 
 class Route
 {
+	/**
+	 * @const string
+	 */
 	public const ROUTE_VERBS = ['get','patch','post','put','delete','head','options'];
 
+	/**
+	 * @const string
+	 */
 	protected const PARAM_SOURCE = '/\{(\w+)(\?)?\}/';
+
+	/**
+	 * @const string
+	 */
 	protected const PARAM_COMPILED = '(?P<name>[^\s?#/]+)';
 
+	/**
+	 * @const string
+	 */
 	protected const URI_COMPILED_TAIL = '(?>\?(?P<__querystring>[^\s#]+)?)?(?>#(?P<__hash>[^\s]+)?)?';
 
+	/**
+	 * @property string
+	 */
 	protected $name;
+
+	/**
+	 * @property array
+	 */
 	protected $verbs;
+
+	/**
+	 * @property string
+	 */
 	protected $uri;
+
+	/**
+	 * @property string
+	 */
 	protected $uriRegex;
+
+	/**
+	 * @property mixed
+	 */
 	protected $handler;
+
+	/**
+	 * @property array
+	 */
 	protected $middleware;
 
+	/**
+	 * Compiles the Routex uri format to its regex capturer form.
+	 *
+	 * @static
+	 * @param string $uri
+	 * @return string
+	 */
 	protected static function compileUri($uri)
 	{
 		$porr = '/(?>\?(?P<querystring>[^\s#]*))?(?>#(?P<hash>[^\s]*))?/';
@@ -37,6 +80,16 @@ class Route
 		) . self::URI_COMPILED_TAIL . '/';
 	}
 
+	/**
+	 * Matches the given $uri with the $pattern and collects parameters to
+	 * $parameters, if any.
+	 *
+	 * @static
+	 * @param string $pattern
+	 * @param string $uri
+	 * @param array &$parameters
+	 * @return bool
+	 */
 	protected static function matchUri($pattern, $uri, &$parameters)
 	{
 		$parameters = [];
@@ -58,7 +111,15 @@ class Route
 		return false;
 	}
 
-	protected static function normalizeMiddleware($middleware)
+	/**
+	 * Transforms a multi-dimensional array in a one-dimensional
+	 * array with all middleware names.
+	 *
+	 * @static
+	 * @param array $middleware
+	 * @return array
+	 */
+	protected static function normalizeMiddleware(array $middleware)
 	{
 		$normalized = [];
 		//
@@ -73,6 +134,17 @@ class Route
 		return $normalized;
 	}
 
+	/**
+	 * Instantiate me.
+	 *
+	 * @static
+	 * @param string $name
+	 * @param string|array $verb
+	 * @param string $uri
+	 * @param string $handler
+	 * @param string|array ...$middleware
+	 * @return void
+	 */
 	public function __construct($name, $verb, $uri, $handler, ...$middleware)
 	{
 		$this->name = $name;
@@ -92,6 +164,12 @@ class Route
 		}
 	}
 
+	/**
+	 * Return the value under the given name, if any.
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
 	public function __get($name)
 	{
 		if (property_exists($this, $name)) {
@@ -99,11 +177,27 @@ class Route
 		}
 	}
 
+	/**
+	 * Tells if the route matches the given verb.
+	 *
+	 * @param string $verb
+	 * @return bool
+	 */
 	public function forVerb($verb)
 	{
 		return in_array(strtolower($verb), $this->verbs, true);
 	}
 
+	/**
+	 * Tells if the route matches the given uri and verb.
+	 * If it matches, gathers data from it and returns through
+	 * the third parameter (passed as reference).
+	 *
+	 * @param string $verb
+	 * @param string $request
+	 * @param array &$data
+	 * @return bool
+	 */
 	public function matches($verb, $request, &$data)
 	{
 		if (! $this->forVerb($verb)) {
