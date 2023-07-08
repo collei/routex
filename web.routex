@@ -31,20 +31,6 @@ without
 
 get /debug/{anything} DebugController@debug 'debug-a-thing'
 
-/*--------------------------------------*\
-preta					161,66	falta 1
-cafeteira				111,95	falta 1
-colchão					82,49	falta 8
-cea						157,49	falta 1
-consertoTelaCelular		150		falta 1
-vitaminasPop			156,36	falta 1
-celPainho				83,60	falta 3
-------------------------------------------
-total					903,55	jun
-total					166,09	jul, ago
-total					82,49	set, ..
-\*--------------------------------------*/
-
 get /paulista PaulistaController@verTransito 'see-transit'
 
 
