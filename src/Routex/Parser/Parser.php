@@ -6,11 +6,29 @@ use Closure;
 
 class Parser
 {
+	/**
+	 * @const string
+	 */
 	protected const ROUTEX_ROUTE = '/^[ \t]*(?P<verb>(?>(?>get|post|patch|put|head|options|delete)(?>\|(?>get|post|patch|put|head|options|delete))*)|(?>get|post|patch|put|head|options|delete|any))[ \t]+(?P<uri>(\/?[\w\-.]+|\/?\{\??\w+(=[^\s\/]+)?\}|\/)+)[ \t]+(?P<handler>\w+(\@\w+)?)([ \t]+([\'"]?)(?P<name>[\w\-.]+)\8)?([ \t]+middleware[ \t]+(?P<middleware>(?>\-?\w+(?>[ \t]*\,[ \t]*\-?\w+)*)))?$/m';
+
+	/**
+	 * @const string
+	 */
 	protected const ROUTEX_GROUP_START = '/^[ \t]*with(([ \t]+prefix[ \t]+(?P<prefix>\S+))|([ \t]+controller[ \t]+(?P<controller>\w+))|([ \t]+name[ \t]+([\'"]?)(?P<name>[\w\-.]+)(\7))|([ \t]+middleware[ \t]+(?P<middleware>(?>\-?\w+(?>[ \t]*\,[ \t]*\-?\w+)*))))*/m';
+
+	/**
+	 * @const string
+	 */
 	protected const ROUTEX_GROUP_END = '/^[ \t]*without(([ \t]+(prefix))|([ \t]+(controller))|([ \t]+(name))|([ \t]+(middleware)))*.*$/';
+
+	/**
+	 * @const string
+	 */
 	protected const ROUTEX_COMMENTS = '/(?:\/\*[\s\S]*?\*\/)|(?:\/\/[^\r\n]*(\r\n|\n))|(?:#[^\r\n]*(\r\n|\n))/m';
 
+	/**
+	 * @const array
+	 */
 	protected const ROUTEX_CONTEXT_ARGS = [
 		'prefix' => 3,
 		'controller' => 5,
@@ -18,23 +36,51 @@ class Parser
 		'middleware' => 9
 	];
 
+	/**
+	 * @const array
+	 */
 	protected const ROUTEX_CURRENT_AGGREGATOR = [
 		'prefix' => '/',
 		'name' => '.',
 		'middleware' => ',',
 	];
 
+	/**
+	 * @var string
+	 */
 	protected $fileName;
-	protected $context;
+
+	/**
+	 * @var array
+	 */
+	protected $context = [];
 	
+	/**
+	 * @var array
+	 */
 	protected $lines = [];
+
+	/**
+	 * @var array
+	 */
 	protected $routexes = [];
 
+	/**
+	 * Instantiate me.
+	 *
+	 * @param string $file
+	 * @return void
+	 */
 	public function __construct($file)
 	{
 		$this->loadFile($file);
 	}
 
+	/**
+	 * Executes parsing.
+	 *
+	 * @return this
+	 */
 	public function parse()
 	{
 		$this->parseRoutex();
@@ -42,11 +88,21 @@ class Parser
 		return $this;
 	}
 
+	/**
+	 * Obtain the route list as array of records (asssociative arrays).
+	 *
+	 * @return array
+	 */
 	public function routes()
 	{
 		return $this->routexes;
 	}
 
+	/**
+	 * Obtain the route list as array of routes.
+	 *
+	 * @return array
+	 */
 	public function routesAsEngineRoutes()
 	{
 		$engineRoutes = [];
@@ -68,6 +124,13 @@ class Parser
 		return $engineRoutes;
 	}
 
+	/**
+	 * Obtain the route list as array of objects modelated according
+	 * the passed $converter callback.
+	 *
+	 * @param \Closure $converter
+	 * @return array
+	 */
 	public function routesAs(Closure $converter)
 	{
 		$results = [];
@@ -79,6 +142,12 @@ class Parser
 		return $results;
 	}
 
+	/**
+	 * Loads the text from the specified file path.
+	 *
+	 * @param string $file
+	 * @return void
+	 */
 	protected function loadFile($file)
 	{
 		$this->fileName = $file;
@@ -86,6 +155,12 @@ class Parser
 		$this->lines = $this->cleanUpComments(file_get_contents($file));
 	}
 
+	/**
+	 * Removes comments from the source.
+	 *
+	 * @param string $source
+	 * @return void
+	 */
 	protected function cleanUpComments($source)
 	{
 		$text = preg_replace(
@@ -100,6 +175,11 @@ class Parser
 		return array_filter(explode(PHP_EOL, $text));
 	}
 
+	/**
+	 * Executes the actual parsing of the source, line by line.
+	 *
+	 * @return void
+	 */
 	protected function parseRoutex()
 	{
 		$this->routexes = [];
@@ -111,6 +191,13 @@ class Parser
 		}
 	}
 
+	/**
+	 * Parses the given source line.
+	 *
+	 * @param string $line
+	 * @param int $number
+	 * @return void
+	 */
 	protected function parseRoutexStatement($line, $number)
 	{
 		if (preg_match(self::ROUTEX_ROUTE, $line, $args)) {
@@ -181,6 +268,11 @@ class Parser
 		}
 	}
 
+	/**
+	 * Reset the context.
+	 *
+	 * @return void
+	 */
 	protected function contextReset()
 	{
 		$this->context = [];
@@ -190,6 +282,11 @@ class Parser
 		};
 	}
 
+	/**
+	 * Gather the current context.
+	 *
+	 * @return array
+	 */
 	protected function contextCurrent()
 	{
 		$current = [];
@@ -205,11 +302,22 @@ class Parser
 		return $current;
 	}
 
+	/**
+	 * Returns the last array element without modifying the array itself.
+	 *
+	 * @return mixed
+	 */
 	protected static function getLastOf($array)
 	{
 		return end($array);
 	}
 
+	/**
+	 * Increase the context.
+	 *
+	 * @param mixed args
+	 * @return void
+	 */
 	protected function contextIncrease($args)
 	{
 		foreach (self::ROUTEX_CONTEXT_ARGS as $key => $index) {
@@ -219,6 +327,12 @@ class Parser
 		}
 	}
 
+	/**
+	 * Decrease the context.
+	 *
+	 * @param mixed args
+	 * @return void
+	 */
 	protected function contextDecrease($args)
 	{
 		$removed = [];
