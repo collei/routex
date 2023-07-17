@@ -1,6 +1,11 @@
 <?php
 namespace Routex\Engine;
 
+/**
+ * Embodies Route properties and operations.
+ *
+ * @author Collei Inc.
+ */
 class Route
 {
 	/**

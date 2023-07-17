@@ -4,6 +4,11 @@ namespace Routex\Parser;
 use Routex\Engine\Route;
 use Closure;
 
+/**
+ * Embodies Route parsing patterns.
+ *
+ * @author Collei Inc.
+ */
 class Parser
 {
 	/**

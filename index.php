@@ -9,6 +9,7 @@ use Routex\Engine\Route;
 $directions = [
 	new Route('alpha','get','/book/contacts/{contact}/phones/{phone?}',null),
 	new Route('bravo','get','/schule/{type}/{name?}/{student?}',null),
+	new Route('charlie','get','/blog/posts/{year}/{month}/{day}/{post?}',null),
 ];
 
 $sample_requests = [

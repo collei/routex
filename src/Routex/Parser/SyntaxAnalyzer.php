@@ -1,8 +1,16 @@
 <?php
 namespace Routex\Parser;
 
+/**
+ * Embodies the syntax analyzer.
+ *
+ * @author Collei Inc.
+ */
 class SyntaxAnalyzer
 {
+	/**
+	 * @const array
+	 */
 	protected const ROUTEX_VALID_SEQUENCES = [
 		Token::RT_VERB => [
 			[ Token::RT_VERB, Token::RT_URI ],
@@ -72,6 +80,13 @@ class SyntaxAnalyzer
 		],
 	];
 
+	/**
+	 * Break the token array in discrete lines, removing newlines
+	 * from their ends.
+	 *
+	 * @param array $tokens
+	 * @return array
+	 */
 	public static function breakInLines(array $tokens)
 	{
 		$emptyLine = [['token' => NULL, 'token_name' => 'EMPTY_LINE']];
@@ -134,6 +149,13 @@ class SyntaxAnalyzer
 		return $lines;
 	}
 
+	/**
+	 * Drives syntax check through all token lines.
+	 *
+	 * @param array $lines
+	 * @param array|null &$errors
+	 * @return bool
+	 */
 	public static function syntaxCheck(array $lines, array &$errors = null)
 	{
 		$errors = [];
@@ -149,6 +171,13 @@ class SyntaxAnalyzer
 		return empty($errors);
 	}
 
+	/**
+	 * Drives syntax check through the given line.
+	 *
+	 * @param array $line
+	 * @param mixed &$error
+	 * @return bool
+	 */
 	protected static function syntaxCheckLine(array $line, &$error = null)
 	{
 		$last = $current = $context = null;
@@ -176,6 +205,12 @@ class SyntaxAnalyzer
 		return true;
 	}
 
+	/**
+	 * Converts a token sequence into a line.
+	 *
+	 * @param array $tokens
+	 * @return string
+	 */
 	protected static function lineFromTokens(array $tokens)
 	{
 		$line = array_map(function($token) {
@@ -185,6 +220,15 @@ class SyntaxAnalyzer
 		return implode(' ', $line);
 	}
 
+	/**
+	 * Check if the given token sequence is valid for the given context.
+	 *
+	 * @param \Routex\Parser\Token $lastToken
+	 * @param \Routex\Parser\Token $currentToken
+	 * @param int $context
+	 * @param array|null &$expected
+	 * @return bool
+	 */
 	protected static function isValidSequence(
 		$lastToken, $currentToken, $context, array &$expected = null
 	) {
@@ -213,6 +257,5 @@ class SyntaxAnalyzer
 		//
 		return false;
 	}
-
 }
 

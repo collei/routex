@@ -1,16 +1,46 @@
 <?php
 namespace Routex\Parser;
 
+/**
+ * Bears Routex tokenizer.
+ *
+ * @author Collei Inc.
+ */
 class Tokenizer
 {
+	/**
+	 * @const string
+	 */
 	protected const RGX_TOKENIZER = '/(\s*"(?>[^"]+)"\s*|\s*\'(?>[^\']+)\'\s*|\s*\,\s*|\s+)/';
+
+	/**
+	 * @const string
+	 */
 	protected const RGX_COMMENT = Token::TOKEN_REGEX[Token::RT_COMMENTS];
+
+	/**
+	 * @const string
+	 */
 	protected const RGX_COMMENT_ISOLATED = '/__X([0-9A-Fa-f]*)X__/';
+
+	/**
+	 * @const string
+	 */
 	protected const RGX_NEWLINE = Token::TOKEN_REGEX[Token::RT_NEWLINE];
+
+	/**
+	 * @const string
+	 */
 	protected const RGX_NEWLINE_ISOLATED = '/__NEWLINE__/';
 
+	/**
+	 * @const string
+	 */
 	protected const PLACEHOLDER_NEWLINE = '__NEWLINE__';
 
+	/**
+	 * @const array
+	 */
 	protected const TOKEN_KEYS = [
 		Token::RT_KEY_PREFIX,
 		Token::RT_KEY_NAME,
@@ -18,6 +48,9 @@ class Tokenizer
 		Token::RT_KEY_MIDDLEWARE,
 	];
 
+	/**
+	 * @const array
+	 */
 	public const TOKEN_SPEC = [
 		Token::RT_NEWLINE => self::RGX_NEWLINE_ISOLATED,
 		Token::RT_COMMENTS => self::RGX_COMMENT_ISOLATED,
@@ -35,6 +68,13 @@ class Tokenizer
 		Token::RT_MIDDLEWARE => Token::TOKEN_REGEX[Token::RT_MIDDLEWARE],
 	];
 
+	/**
+	 * Break the given $text in tokens.
+	 *
+	 * @static
+	 * @param string $text
+	 * @return array
+	 */
 	public static function tokenize($text)
 	{
 		return self::classifyTokens(
@@ -42,6 +82,13 @@ class Tokenizer
 		);
 	}
 
+	/**
+	 * Help to protect comments against unwanted parsing by encoding them.
+	 *
+	 * @static
+	 * @param string $source
+	 * @return string
+	 */
 	protected static function isolateComments($source)
 	{
 		return preg_replace_callback(self::RGX_COMMENT, function($matches) {
@@ -49,6 +96,13 @@ class Tokenizer
 		}, $source);
 	}
 
+	/**
+	 * Restore previously protected comments (reverts isolateComments() method).
+	 *
+	 * @static
+	 * @param string $source
+	 * @return string
+	 */
 	protected static function restoreComments($source)
 	{
 		return preg_replace_callback(self::RGX_COMMENT_ISOLATED, function($matches) {
@@ -56,6 +110,13 @@ class Tokenizer
 		}, $source);
 	}
 
+	/**
+	 * Help to protect newlines against unwanted parsing.
+	 *
+	 * @static
+	 * @param string $source
+	 * @return string
+	 */
 	protected static function isolateNewlines($source)
 	{
 		return str_replace(
@@ -65,11 +126,25 @@ class Tokenizer
 		);
 	}
 
+	/**
+	 * Restore previously protected newlines.
+	 *
+	 * @static
+	 * @param string $source
+	 * @return string
+	 */
 	protected static function restoreNewlines($source)
 	{
 		return str_replace(self::PLACEHOLDER_NEWLINE, PHP_EOL, $source);
 	}
 
+	/**
+	 * Parses the given $source into an array of string (brute tokens).
+	 *
+	 * @static
+	 * @param string $source
+	 * @return array
+	 */
 	protected static function breakInTokens($source)
 	{
 		$source = self::isolateComments($source);
@@ -83,6 +158,13 @@ class Tokenizer
 		);
 	}
 
+	/**
+	 * Counts how many lines the given $literal token has.
+	 *
+	 * @static
+	 * @param string $literal
+	 * @return int
+	 */
 	protected static function tokenLines($literal)
 	{
 		if ($lines = preg_split(self::RGX_NEWLINE, $literal)) {
@@ -92,6 +174,13 @@ class Tokenizer
 		return 1;
 	}
 
+	/**
+	 * Drives token classification through the given token array.
+	 *
+	 * @static
+	 * @param array $tokens
+	 * @return array
+	 */
 	protected static function classifyTokens(array $tokens)
 	{
 		$classified = [];
@@ -144,11 +233,18 @@ class Tokenizer
 		return $classified;
 	}
 
+	/**
+	 * Classifies the given token according to internal token spec.
+	 *
+	 * @static
+	 * @param string $token
+	 * @param int $id
+	 * @param int|null $lines
+	 * @return \Routex\Parser\Token
+	 */
 	protected static function classifyToken($token, $id, $lines = null)
 	{
 		return Token::make($id, $token)->lineCount($lines);
 	}
-
 }
-
 
