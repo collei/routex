@@ -206,6 +206,34 @@ class SyntaxAnalyzer
 	}
 
 	/**
+	 * Converts the token lines back to a cleaned parsed source.
+	 *
+	 * @param array $tokenLines
+	 * @return string
+	 */
+	public static function sourceFromLines(array $tokenLines)
+	{
+		$source = [];
+		$indentation = 0;
+		//
+		foreach ($tokenLines as $key => $tokenLine) {
+			$tokenId = $tokenLine[0] instanceof Token ? $tokenLine[0]->id : 0;
+			//
+			if (Token::RT_KEYWORD_WITHOUT == $tokenId) {
+				--$indentation;
+			}
+			//
+			$source[$key] = str_repeat("\t", $indentation) . self::lineFromTokens($tokenLine);
+			//
+			if (Token::RT_KEYWORD_WITH == $tokenId) {
+				++$indentation;
+			}
+		}
+		//
+		return implode(PHP_EOL, $source);
+	}
+
+	/**
 	 * Converts a token sequence into a line.
 	 *
 	 * @param array $tokens
@@ -214,10 +242,10 @@ class SyntaxAnalyzer
 	protected static function lineFromTokens(array $tokens)
 	{
 		$line = array_map(function($token) {
-			return $token->token ?? $token;
+			return $token->token ?? $token['token'] ?? '';
 		}, $tokens);
 		//
-		return implode(' ', $line);
+		return str_replace(' , ', ', ', implode(' ', $line));
 	}
 
 	/**
