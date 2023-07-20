@@ -74,9 +74,15 @@ $tokens = Tokenizer::tokenize(
 
 $lines = SyntaxAnalyzer::breakInLines($tokens);
 
-SyntaxAnalyzer::syntaxCheck($lines, $errors);
+if (SyntaxAnalyzer::syntaxCheck($lines, $errors)) {
+	$cleanedSource = SyntaxAnalyzer::sourceFromLines($lines);
+}
 
 ?>
+<fieldset>
+	<legend>Cleaned Source</legend>
+	<fieldset><pre><?php echo($cleanedSource ?? ''); ?></pre></fieldset>
+</fieldset>
 <fieldset>
 	<legend>Syntax Errors (if any)</legend>
 	<fieldset><pre><?php echo print_r($errors,true); ?></pre></fieldset>
