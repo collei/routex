@@ -68,8 +68,13 @@ class Route
 	protected static function compileUri($uri)
 	{
 		$porr = '/(?>\?(?P<querystring>[^\s#]*))?(?>#(?P<hash>[^\s]*))?/';
-
+		//
+		// remove duplicate slashes
 		$uri = str_replace(['////','///','//'], '/', $uri);
+		//
+		// recover the two slash for the protocol part
+		$uri = preg_replace('/(https?):\//', '$1://', $uri);
+		//
 		$replacer = array('from' => [], 'to' => []);
 		//
 		if (preg_match_all(self::PARAM_SOURCE, $uri, $matches, PREG_SET_ORDER) > 0) {
