@@ -10,6 +10,7 @@ $directions = [
 	new Route('alpha','get','/book/contacts/{contact}/phones/{phone?}',null),
 	new Route('bravo','get','/schule/{type}/{name?}/{student?}',null),
 	new Route('charlie','get','/blog/posts/{year}/{month}/{day}/{post?}',null),
+	new Route('delta','get','http://{produto}.megaloja.com.br/vitrine/{pagina}',null),
 ];
 
 $sample_requests = [
@@ -18,6 +19,8 @@ $sample_requests = [
 	'/schule/hauptschule?type=LEGO-IV',
 	'/book/contacts/1376/phones/79857644323',
 	'/book/contacts/1376/phones?dull=no',
+	'http://ferro-de-passar.megaloja.com.br/vitrine/27',
+	'http://ferro-de-passar.megaloja.com.br/vitrine/27?moeda=BTC',
 ];
 
 $samples = [];

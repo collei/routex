@@ -33,5 +33,3 @@ get /debug/{anything} DebugController@debug 'debug-a-thing'
 
 get /paulista PaulistaController@verTransito 'see-transit'
 
-
-
